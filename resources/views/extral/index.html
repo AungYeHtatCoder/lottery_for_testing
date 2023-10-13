@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Text Animation with Three.js</title>
+    </head>
+    <body>
+        <div id="scene-container"></div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+        <script>
+            // Set up the scene
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(
+                75,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document
+                .getElementById("scene-container")
+                .appendChild(renderer.domElement);
+
+            // Create text geometry
+            const fontLoader = new THREE.FontLoader();
+
+            fontLoader.load(
+                "https://cdn.rawgit.com/mrdoob/three.js/r128/examples/fonts/helvetiker_regular.typeface.json",
+                function (font) {
+                    // Create the text geometry using the loaded font
+                    const textGeometry = new THREE.TextGeometry(
+                        "Hello, Three.js",
+                        {
+                            font: font, // Make sure 'font' is the loaded font object
+                            size: 1,
+                            height: 0.2,
+                            curveSegments: 12,
+                            bevelEnabled: true,
+                            bevelThickness: 0.03,
+                            bevelSize: 0.02,
+                            bevelSegments: 5,
+                        }
+                    );
+
+                    // Create material
+                    const material = new THREE.MeshBasicMaterial({
+                        color: 0x00ff00,
+                    });
+                    const textMesh = new THREE.Mesh(textGeometry, material);
+
+                    scene.add(textMesh);
+
+                    // Position the camera
+                    camera.position.z = 5;
+
+                    // Create an animation loop
+                    const animate = () => {
+                        requestAnimationFrame(animate);
+
+                        // Rotate the text
+                        textMesh.rotation.x += 0.01;
+                        textMesh.rotation.y += 0.01;
+
+                        renderer.render(scene, camera);
+                    };
+
+                    animate();
+                }
+            );
+        </script>
+    </body>
+</html>
