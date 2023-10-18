@@ -17,11 +17,11 @@
 							<div class="col-xl-12">
 								<ul class="breadcrumb">
 									<li class="breadcrumb-item"><a href="{{ route('home') }}">Dashboard</a></li>
-									<li class="breadcrumb-item active">2D Morning | Evening History Dashboard</li>
+									<li class="breadcrumb-item active">Permission Dashboard</li>
 								</ul>
 
 								<h1 class="page-header">
-									2D Morning | Evening History Dashboard 
+									2D Morning (12AM) Dashboard <small>page header description goes here...</small>
 								</h1>
 
 								<hr class="mb-4">
@@ -70,40 +70,55 @@
 										<div class="card-body">
 											<table id="datatableDefault" class="table text-nowrap w-100">
 												<thead>
-													<tr>
-            <th>Lottery ID</th>
-												<th>PlayerName</th>
-            <th>Two Digits</th>
-            <th>Total Amount</th>
-												<th>Date</th>
-												<th>Action</th>
-        </tr>
-												</thead>
-            <tbody>
-        @foreach($lotteries as $lottery)
         <tr>
-            <td>{{ $lottery->id }}</td>
-            <td>{{ $lottery->user->name }}</td>
-            <td>
-                <ul>
-                    @foreach($lottery->twoDigits as $twoDigit)
-                        <li>
-                            {{ $twoDigit->two_digit }}
-                             Amount :{{ $twoDigit->pivot->sub_amount }}
-                        </li>
-                    @endforeach
-                </ul>
-            </td>
-            <td>{{ $lottery->total_amount }}</td>
-												{{-- date with month year day name and time with Am and Pm time zone with Myanmar --}}
-
-												{{-- <td>{{ $lottery->created_at->format('d M Y (l) h:i:s A') }}</td> --}}
-												<td>{{ $lottery->created_at->format('d-m-Y (l) (h:i a)') }}</td>
-												<td>
-													<a href="" class="btn btn-warning btn-sm">Show</a>
-												</td>
+            <th>Lottery ID</th>
+            <th>PlayerName</th>
+            <th>Two Digits</th>
+            {{-- <th>Pay Amount</th> --}}
+            {{-- <th>Total Amount</th> --}}
+            {{-- <th>6AM-12PM Prize No</th> --}}
+												<th>Result</th>
+            {{-- <th>12PM-6PM Prize No</th> --}}
         </tr>
+    </thead>
+    <tbody>
+        <!-- Loop through each lottery -->
+@foreach($lotteries as $lottery)
+    <tr>
+        <td>{{ $lottery->id }}</td>
+        <td>{{ $lottery->user->name }}</td>  <!-- Assuming there's a relation from Lottery to User -->
+								<td>
+    <ul>
+        @foreach($lottery->twoDigits as $twoDigit)
+            <li>
+                {{ $twoDigit->two_digit }} Amount: {{ $twoDigit->pivot->sub_amount }} - 
+                {{ $twoDigit->pivot->created_at->format('d M Y (l) (h:i a)') }}
+            </li>
         @endforeach
+    </ul>
+</td>
+
+												{{-- <td>
+													{{ $lottery->created_at->format('d M Y (l) (h:i a)') }}
+
+												</td> --}}
+        <td>
+            <ul>
+                @foreach($lottery->twoDigitsMorning as $twoDigit)
+                    <li>
+                        
+                        <!-- Check if it's a winner -->
+                        @if($prize_no_morning && $twoDigit->two_digit === $prize_no_morning->prize_no)
+                            <span class="badge badge-success">WINNER</span>
+                        @endif
+                    </li>
+                @endforeach
+            </ul>
+        </td>
+       
+    </tr>
+@endforeach
+
     </tbody>
            </table>
 										</div>
@@ -130,20 +145,5 @@
 @endsection
 
 @section('scripts')
-<script src="{{ asset('admin_app/assets/plugins/@highlightjs/cdn-assets/highlight.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/js/demo/highlightjs.demo.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net/js/jquery.dataTables.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-bs5/js/dataTables.bootstrap5.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-buttons/js/buttons.colVis.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-buttons/js/buttons.flash.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/bootstrap-table/dist/bootstrap-table.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/js/demo/table-plugins.demo.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/js/demo/sidebar-scrollspy.demo.js') }}"></script>
-	<!-- ================== END page-js ================== -->
+@include('layouts.two_index_js')
 @endsection

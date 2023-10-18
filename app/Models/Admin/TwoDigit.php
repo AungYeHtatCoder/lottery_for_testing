@@ -13,13 +13,10 @@ class TwoDigit extends Model
     protected $fillable = [
         'two_digit',
     ];
-//     public function lotteries()
-// {
-//     return $this->belongsToMany(Lottery::class, 'lottery_two_digit_pivot', 'two_digit_id', 'lottery_id');
-// }
-public function lotteries() {
-    return $this->belongsToMany(Lottery::class, 'lottery_two_digit_pivot')->withPivot('sub_amount');
-}
+
+    public function lotteries() {
+        return $this->belongsToMany(Lottery::class, 'lottery_two_digit_pivot')->withPivot('sub_amount');
+    }
 
 
 }

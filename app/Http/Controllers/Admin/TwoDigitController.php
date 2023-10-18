@@ -51,7 +51,7 @@ class TwoDigitController extends Controller
 
         // Check if user balance is negative after deduction
         if ($user->balance < 0) {
-            return redirect()->back()->with('error', 'Your balance is not enough.');
+            throw new \Exception('Your balance is not enough.');
         }
 
         // Update user balance in the database
@@ -65,6 +65,14 @@ class TwoDigitController extends Controller
 
         $attachData = [];
         foreach($request->amounts as $two_digit_id => $sub_amount) {
+            $totalBetAmountForTwoDigit = DB::table('lottery_two_digit_pivot')
+                    ->where('two_digit_id', $two_digit_id)
+                    ->sum('sub_amount');
+
+            if($totalBetAmountForTwoDigit + $sub_amount > 5000) {
+                $twoDigit = TwoDigit::find($two_digit_id);
+                throw new \Exception("The two-digit's amount limit for {$twoDigit->two_digit} is full.");
+            }
             $attachData[$two_digit_id] = ['sub_amount' => $sub_amount];
         }
 
@@ -75,13 +83,60 @@ class TwoDigitController extends Controller
         return redirect()->back()->with('message', 'Data stored successfully!');
     } catch (\Exception $e) {
         DB::rollback();
-        
-        // Optional: Log the exception for debugging
-        //\Log::error($e);
-
-        return redirect()->back()->with('error', 'Something went wrong. Please try again.');
+        return redirect()->back()->with('error', $e->getMessage());
     }
 }
+
+//     public function store(Request $request)
+// {
+//     $validatedData = $request->validate([
+//         'selected_digits' => 'required|string',
+//         'amounts' => 'required|array',
+//         'amounts.*' => 'required|integer|min:100|max:5000',
+//         'totalAmount' => 'required|integer|min:100',
+//         'user_id' => 'required|exists:users,id',
+//     ]);
+
+//     DB::beginTransaction();
+
+//     try {
+//         // Deduct the total amount from the user's balance
+//         $user = Auth::user();
+//         $user->balance -= $request->totalAmount;
+
+//         // Check if user balance is negative after deduction
+//         if ($user->balance < 0) {
+//             return redirect()->back()->with('error', 'Your balance is not enough.');
+//         }
+
+//         // Update user balance in the database
+//         $user->save();
+
+//         $lottery = Lottery::create([
+//             'pay_amount' => $request->totalAmount,
+//             'total_amount' => $request->totalAmount,
+//             'user_id' => $request->user_id,
+//         ]);
+
+//         $attachData = [];
+//         foreach($request->amounts as $two_digit_id => $sub_amount) {
+//             $attachData[$two_digit_id] = ['sub_amount' => $sub_amount];
+//         }
+
+//         $lottery->twoDigits()->attach($attachData);
+
+//         DB::commit();
+
+//         return redirect()->back()->with('message', 'Data stored successfully!');
+//     } catch (\Exception $e) {
+//         DB::rollback();
+        
+//         // Optional: Log the exception for debugging
+//         //\Log::error($e);
+
+//         return redirect()->back()->with('error', 'Something went wrong. Please try again.');
+//     }
+// }
 
 // public function store(Request $request)
 // {

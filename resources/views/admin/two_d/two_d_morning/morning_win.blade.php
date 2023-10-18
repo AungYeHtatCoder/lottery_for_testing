@@ -17,11 +17,11 @@
 							<div class="col-xl-12">
 								<ul class="breadcrumb">
 									<li class="breadcrumb-item"><a href="{{ route('home') }}">Dashboard</a></li>
-									<li class="breadcrumb-item active">Permission Dashboard</li>
+									<li class="breadcrumb-item active">2D Morning Winner Dashboard</li>
 								</ul>
 
 								<h1 class="page-header">
-									Permission Dashboard <small>page header description goes here...</small>
+									2D Morning Winner Dashboard 
 								</h1>
 
 								<hr class="mb-4">

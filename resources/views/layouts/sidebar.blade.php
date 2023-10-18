@@ -113,13 +113,13 @@
 								</a>
 							</div>
 								<div class="menu-item">
-								<a href="" class="menu-link">
-									<div class="menu-text">Thai_3D</div>
+								<a href="{{ route('admin.eveningNumber')}}" class="menu-link">
+									<div class="menu-text">2DEvening</div>
 								</a>
 							</div>
 														<div class="menu-item">
-								<a href="" class="menu-link">
-									<div class="menu-text">SingaporeLottery</div>
+								<a href="{{ route('admin.eveningWinner') }}" class="menu-link">
+									<div class="menu-text">2DEveningWinner</div>
 								</a>
 							</div>
 							{{-- <div class="menu-item">

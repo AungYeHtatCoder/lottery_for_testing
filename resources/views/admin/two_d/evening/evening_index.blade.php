@@ -21,7 +21,7 @@
 								</ul>
 
 								<h1 class="page-header">
-									Permission Dashboard <small>page header description goes here...</small>
+									2D Evening (4:30 AM) Dashboard <small>page header description goes here...</small>
 								</h1>
 
 								<hr class="mb-4">
@@ -76,7 +76,8 @@
             <th>Two Digits</th>
             {{-- <th>Pay Amount</th> --}}
             {{-- <th>Total Amount</th> --}}
-            <th>6AM-12PM Prize No</th>
+            {{-- <th>6AM-12PM Prize No</th> --}}
+												<th>Result</th>
             {{-- <th>12PM-6PM Prize No</th> --}}
         </tr>
     </thead>
@@ -87,30 +88,34 @@
         <td>{{ $lottery->id }}</td>
         <td>{{ $lottery->user->name }}</td>  <!-- Assuming there's a relation from Lottery to User -->
 								<td>
-                <ul>
-                    @foreach($lottery->twoDigits as $twoDigit)
-                        <li>
-                            {{ $twoDigit->two_digit }}
-                             Amount :{{ $twoDigit->pivot->sub_amount }}
-                        </li>
-                    @endforeach
-                </ul>
-            </td>
+    <ul>
+        @foreach($lottery->twoDigits as $twoDigit)
+            <li>
+                {{ $twoDigit->two_digit }} Amount: {{ $twoDigit->pivot->sub_amount }} - 
+                {{ $twoDigit->pivot->created_at->format('d M Y (l) (h:i a)') }}
+            </li>
+        @endforeach
+    </ul>
+</td>
+
+												{{-- <td>
+													{{ $lottery->created_at->format('d M Y (l) (h:i a)') }}
+
+												</td> --}}
         <td>
             <ul>
                 @foreach($lottery->twoDigitsMorning as $twoDigit)
                     <li>
-                        Two Digit: {{ $twoDigit->two_digit }}
-                        {{-- Amount: {{ $twoDigit->pivot->sub_amount }} --}}
+                        
                         <!-- Check if it's a winner -->
-                        @if($prize_no_morning && $twoDigit->two_digit === $prize_no_morning->prize_no)
+                        @if($prize_no_afternoon && $twoDigit->two_digit === $prize_no_afternoon->prize_no)
                             <span class="badge badge-success">WINNER</span>
                         @endif
                     </li>
                 @endforeach
             </ul>
         </td>
-        <!-- ... [rest of the columns] -->
+       
     </tr>
 @endforeach
 

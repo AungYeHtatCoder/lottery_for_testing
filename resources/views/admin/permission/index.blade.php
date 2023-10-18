@@ -43,25 +43,25 @@
 
 													</tr>
 												</thead>
-                                                <tbody>
-                                                    @foreach($permissions as $key => $permission)
-                                                    <tr>
-														<td>{{ ++$key }}</td>
-														<td>{{ $permission->title }}</td>
-														<td>{{ $permission->created_at->format('F j, Y') }}</td>
-                                                        <td>{{ $permission->updated_at->format('F j, Y') }}</td>
-                                                        <td>
-                                                            <a href="{{ route('admin.permissions.edit', $permission->id) }}" class="btn btn-primary btn-sm">Edit</a>
-                                                            <a href="{{ route('admin.permissions.show', $permission->id) }}" class="btn btn-info btn-sm">Show</a>
-                                                            <form class="d-inline" action="{{ route('admin.permissions.destroy', $permission->id) }}" method="POST">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="btn btn-danger btn-sm">Del</button>
-                                                            </form>
-                                                        </td>
-                                                    </tr>
-                                                    @endforeach
-                                                </tbody>
+														<tbody>
+																		@foreach($permissions as $key => $permission)
+																		<tr>
+<td>{{ ++$key }}</td>
+<td>{{ $permission->title }}</td>
+<td>{{ $permission->created_at->format('F j, Y') }}</td>
+																						<td>{{ $permission->updated_at->format('F j, Y') }}</td>
+																						<td>
+																										<a href="{{ route('admin.permissions.edit', $permission->id) }}" class="btn btn-primary btn-sm">Edit</a>
+																										<a href="{{ route('admin.permissions.show', $permission->id) }}" class="btn btn-info btn-sm">Show</a>
+																										<form class="d-inline" action="{{ route('admin.permissions.destroy', $permission->id) }}" method="POST">
+																														@csrf
+																														@method('DELETE')
+																														<button type="submit" class="btn btn-danger btn-sm">Del</button>
+																										</form>
+																						</td>
+																		</tr>
+																		@endforeach
+														</tbody>
 											</table>
 										</div>
 										{{-- <div class="card-arrow">

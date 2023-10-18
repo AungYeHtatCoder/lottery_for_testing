@@ -72,12 +72,34 @@
 </div>
 
 <div class="modal-body">
-    @foreach($twoDigits->chunk(5) as $chunk)
+    {{-- @foreach($twoDigits->chunk(5) as $chunk)
         <div class="row my-5">
             @foreach($chunk as $digit)
                 <div class="col-2 text-center digit" onclick="selectDigit('{{ $digit->two_digit }}', this)">
                     {{ $digit->two_digit }}
                 </div>
+            @endforeach
+        </div>
+    @endforeach --}}
+
+    @foreach($twoDigits->chunk(5) as $chunk)
+        <div class="row my-5">
+            @foreach($chunk as $digit)
+                @php
+                $totalBetAmountForTwoDigit = DB::table('lottery_two_digit_pivot')
+                    ->where('two_digit_id', $digit->id)
+                    ->sum('sub_amount');
+                @endphp
+
+                @if($totalBetAmountForTwoDigit < 5000)
+                    <div class="col-2 text-center digit" onclick="selectDigit('{{ $digit->two_digit }}', this)">
+                        {{ $digit->two_digit }}
+                    </div>
+                @else
+                    <div class="col-2 text-center digit disabled" onclick="alert('This two digit\'s amount limit is full.')">
+                        {{ $digit->two_digit }}
+                    </div>
+                @endif
             @endforeach
         </div>
     @endforeach

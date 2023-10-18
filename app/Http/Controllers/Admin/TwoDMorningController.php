@@ -16,20 +16,60 @@ class TwoDMorningController extends Controller
      */
     public function index()
 {
-    $lotteries = Lottery::with('twoDigitsMorning')->get();
-
+    // Retrieve lotteries between 6am and 12pm where the associated LotteryMatch is active
+    $lotteries = Lottery::whereHas('lotteryMatch', function ($query) {
+        $query->where('is_active', true);
+    })->whereHas('twoDigitsMorning')->get();
     $prize_no_morning = TwodWiner::whereDate('created_at', Carbon::today())
-                                 ->whereBetween('created_at', [Carbon::now()->startOfDay()->addHours(6), Carbon::now()->startOfDay()->addHours(12)])
+                                  ->whereBetween('created_at', [Carbon::now()->startOfDay()->addHours(6), Carbon::now()->startOfDay()->addHours(12)])
                                  ->orderBy('id', 'desc')
-                                 ->first();
-
-    $prize_no_afternoon = TwodWiner::whereDate('created_at', Carbon::today())
-                                   ->whereBetween('created_at', [Carbon::now()->startOfDay()->addHours(12), Carbon::now()->startOfDay()->addHours(18)])
-                                   ->orderBy('id', 'desc')
-                                   ->first();
+                                  ->first();
     $prize_no = TwodWiner::whereDate('created_at', Carbon::today())->orderBy('id', 'desc')->first();
-    return view('admin.two_d.two_d_morning.index', compact('lotteries', 'prize_no_morning', 'prize_no_afternoon', 'prize_no'));
+
+    // Pass the retrieved data to the view
+    return view('admin.two_d.two_d_morning.morning_index', [
+        'lotteries' => $lotteries,
+        'prize_no' => $prize_no,
+        'prize_no_morning' => $prize_no_morning
+    ]);
 }
+
+public function EveningTwoD()
+{
+    // Retrieve lotteries between 6am and 12pm where the associated LotteryMatch is active
+    $lotteries = Lottery::whereHas('lotteryMatch', function ($query) {
+        $query->where('is_active', true);
+    })->whereHas('twoDigitsEvening')->get();
+    $prize_no_afternoon = TwodWiner::whereDate('created_at', Carbon::today())
+                                  ->whereBetween('created_at', [Carbon::now()->startOfDay()->addHours(12), Carbon::now()->startOfDay()->addHours(18)])
+                                 ->orderBy('id', 'desc')
+                                  ->first();
+    $prize_no = TwodWiner::whereDate('created_at', Carbon::today())->orderBy('id', 'desc')->first();
+
+    // Pass the retrieved data to the view
+    return view('admin.two_d.evening.evening_index', [
+        'lotteries' => $lotteries,
+        'prize_no' => $prize_no,
+        'prize_no_afternoon' => $prize_no_afternoon
+    ]);
+}
+
+//     public function index()
+// {
+//     $lotteries = Lottery::with('twoDigitsMorning')->get();
+
+//     $prize_no_morning = TwodWiner::whereDate('created_at', Carbon::today())
+//                                  ->whereBetween('created_at', [Carbon::now()->startOfDay()->addHours(6), Carbon::now()->startOfDay()->addHours(12)])
+//                                  ->orderBy('id', 'desc')
+//                                  ->first();
+
+//     $prize_no_afternoon = TwodWiner::whereDate('created_at', Carbon::today())
+//                                    ->whereBetween('created_at', [Carbon::now()->startOfDay()->addHours(12), Carbon::now()->startOfDay()->addHours(18)])
+//                                    ->orderBy('id', 'desc')
+//                                    ->first();
+//     $prize_no = TwodWiner::whereDate('created_at', Carbon::today())->orderBy('id', 'desc')->first();
+//     return view('admin.two_d.two_d_morning.index', compact('lotteries', 'prize_no_morning', 'prize_no_afternoon', 'prize_no'));
+// }
 
 public function TwoDMorningWinner()
 {
@@ -40,12 +80,24 @@ public function TwoDMorningWinner()
                                  ->orderBy('id', 'desc')
                                  ->first();
 
+    // $prize_no_afternoon = TwodWiner::whereDate('created_at', Carbon::today())
+    //                                ->whereBetween('created_at', [Carbon::now()->startOfDay()->addHours(12), Carbon::now()->startOfDay()->addHours(18)])
+    //                                ->orderBy('id', 'desc')
+    //                                ->first();
+    $prize_no = TwodWiner::whereDate('created_at', Carbon::today())->orderBy('id', 'desc')->first();
+    return view('admin.two_d.two_d_morning.morning_win', compact('lotteries', 'prize_no_morning', 'prize_no'));
+}
+
+
+public function TwoDEveningWinner()
+{
+    $lotteries = Lottery::with('twoDigitsEvening')->get();
     $prize_no_afternoon = TwodWiner::whereDate('created_at', Carbon::today())
                                    ->whereBetween('created_at', [Carbon::now()->startOfDay()->addHours(12), Carbon::now()->startOfDay()->addHours(18)])
                                    ->orderBy('id', 'desc')
                                    ->first();
     $prize_no = TwodWiner::whereDate('created_at', Carbon::today())->orderBy('id', 'desc')->first();
-    return view('admin.two_d.two_d_morning.morning_win', compact('lotteries', 'prize_no_morning', 'prize_no_afternoon', 'prize_no'));
+    return view('admin.two_d.evening.evening_win', compact('lotteries', 'prize_no_afternoon', 'prize_no'));
 }
 
 // SendToAccBalanceUpdate 

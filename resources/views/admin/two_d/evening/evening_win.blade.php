@@ -17,11 +17,11 @@
 							<div class="col-xl-12">
 								<ul class="breadcrumb">
 									<li class="breadcrumb-item"><a href="{{ route('home') }}">Dashboard</a></li>
-									<li class="breadcrumb-item active">2D Morning | Evening History Dashboard</li>
+									<li class="breadcrumb-item active">2D Evening Winner Dashboard</li>
 								</ul>
 
 								<h1 class="page-header">
-									2D Morning | Evening History Dashboard 
+									2D Evening Winner Dashboard 
 								</h1>
 
 								<hr class="mb-4">
@@ -69,43 +69,51 @@
 									<div class="card">
 										<div class="card-body">
 											<table id="datatableDefault" class="table text-nowrap w-100">
-												<thead>
-													<tr>
-            <th>Lottery ID</th>
-												<th>PlayerName</th>
-            <th>Two Digits</th>
-            <th>Total Amount</th>
-												<th>Date</th>
-												<th>Action</th>
-        </tr>
-												</thead>
-            <tbody>
-        @foreach($lotteries as $lottery)
+    <thead>
         <tr>
-            <td>{{ $lottery->id }}</td>
-            <td>{{ $lottery->user->name }}</td>
-            <td>
-                <ul>
-                    @foreach($lottery->twoDigits as $twoDigit)
-                        <li>
-                            {{ $twoDigit->two_digit }}
-                             Amount :{{ $twoDigit->pivot->sub_amount }}
-                        </li>
-                    @endforeach
-                </ul>
-            </td>
-            <td>{{ $lottery->total_amount }}</td>
-												{{-- date with month year day name and time with Am and Pm time zone with Myanmar --}}
-
-												{{-- <td>{{ $lottery->created_at->format('d M Y (l) h:i:s A') }}</td> --}}
-												<td>{{ $lottery->created_at->format('d-m-Y (l) (h:i a)') }}</td>
-												<td>
-													<a href="" class="btn btn-warning btn-sm">Show</a>
-												</td>
+            <th>PlayerName</th>
+            <th>Winning Two Digits</th>
+            <th>Bet Amount</th>
+            <th>12PM-4:30PM</th>
+            <th>Prize Amount</th>
+            <th>SendToAccBalance</th>
         </tr>
-        @endforeach
-    </tbody>
-           </table>
+    </thead>
+    <tbody>
+        <!-- Loop through each lottery -->
+        @foreach($lotteries as $lottery)
+            <!-- Loop through each two digits for the lottery -->
+            @foreach($lottery->twoDigitsEvening as $twoDigit)
+                <!-- Check if it's a winner -->
+                @if($prize_no_afternoon && $twoDigit->two_digit === $prize_no_afternoon->prize_no)
+                    <tr>
+                        <td>{{ $lottery->user->name }}</td>
+                        <td>{{ $twoDigit->two_digit }}</td>
+                        <td>{{ $twoDigit->pivot->sub_amount }}</td>
+                        <td><span class="badge badge-success">WINNER</span></td>
+                        <td>{{ $twoDigit->pivot->sub_amount * 85 }}</td>
+                     <td>
+                         @if(!$twoDigit->pivot->prize_sent)
+                             <form action="{{ route('admin.tow-d-morning-number.update', $lottery->id) }}" method="post">
+                                 @csrf
+                                 @method('PUT')
+                                 <input type="hidden" name="lottery_id" value="{{ $lottery->id }}">
+                                 <input type="hidden" name="two_digit_id" value="{{ $twoDigit->id }}">
+                                 <input type="hidden" name="amount" value="{{ $twoDigit->pivot->sub_amount * 85 }}">
+                                 <button type="submit" class="btn btn-success">Send</button>
+                             </form>
+                         @else
+                             <button type="button" class="btn btn-success" disabled>Sent</button>
+                         @endif
+                     </td>
+                              </tr>
+                              @endif
+                          @endforeach
+                      @endforeach
+                     </tbody>
+                    </table>
+
+
 										</div>
 										{{-- if user win two digit with amount 100, i will pay to user 100 * 85 . when i have been paid to user 100 * 8500, user balance is automatically update --}}
 									</div>
@@ -130,20 +138,5 @@
 @endsection
 
 @section('scripts')
-<script src="{{ asset('admin_app/assets/plugins/@highlightjs/cdn-assets/highlight.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/js/demo/highlightjs.demo.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net/js/jquery.dataTables.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-bs5/js/dataTables.bootstrap5.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-buttons/js/buttons.colVis.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-buttons/js/buttons.flash.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/plugins/bootstrap-table/dist/bootstrap-table.min.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/js/demo/table-plugins.demo.js') }}"></script>
-	<script src="{{ asset('admin_app/assets/js/demo/sidebar-scrollspy.demo.js') }}"></script>
-	<!-- ================== END page-js ================== -->
+@include('layouts.two_index_js')
 @endsection
